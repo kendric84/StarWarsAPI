@@ -13,27 +13,52 @@ class App extends Component {
       disablePrevious: true,
       disableNext: false,
       characters: [],
-      homeworldsCache: [{ url: "", name: "" }],
       speciesCache: [{ url: "", name: "" }],
+      homeworldsCache: [{ url: "", name: "" }],
     };
     this.navigate = this.navigate.bind(this);
   }
 
-  componentDidMount() {
-    axios
-      .get("https://swapi.dev/api/people/")
-      .then((response) => {
-        let result = response.data.results || [];
-        for (let i = 0; i < result.length; i++) {
-          console.log(this.homeworldLU(result[i].homeworld));
-        }
-        this.setState({ characters: result });
-        this.setState({ nextPage: response.data.next });
-        this.setState({ previousPage: response.data.previous });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  async componentDidMount() {
+    const peopleResponse = await axios.get("https://swapi.dev/api/people/");
+    let result = peopleResponse.data.results || [];
+    for (let i = 0; i < result.length; i++) {
+      const homeworld = await this.homeworldLU(result[i].homeworld);
+      result[i].homeworld = homeworld;
+      if (result[i].species === null) {
+        result[i].species = "Human";
+      } else {
+        const species = await this.speciesLU(result[i].species);
+        result[i].species = species;
+      }
+    }
+    this.setState({ characters: result });
+    this.setState({ nextPage: peopleResponse.data.next });
+    this.setState({ previousPage: peopleResponse.data.previous });
+  }
+
+  speciesLU(url) {
+    let species = [];
+    let cachedSpecies = this.state.speciesCache;
+    let entry = cachedSpecies.find((entry) => entry.url === url);
+    if (typeof entry === "undefined") {
+      return axios
+        .get(url)
+        .then((response) => {
+          species = response.data || [];
+          cachedSpecies.push({ url: url, name: species.name });
+          this.setState({ speciesCache: species });
+          species = species.name;
+          return species;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      species = entry.name;
+    }
+    alert(species);
+    return species;
   }
 
   homeworldLU(url) {
@@ -41,28 +66,22 @@ class App extends Component {
     let entry = cachedWorlds.find((entry) => entry.url === url);
     let homeWorld = [];
     if (typeof entry === "undefined") {
-      (axios
+      return axios
         .get(url)
-        .then(response => {
+        .then((response) => {
           homeWorld = response.data || [];
           cachedWorlds.push({ url: url, name: homeWorld.name });
           this.setState({ homeworldsCache: cachedWorlds });
           homeWorld = homeWorld.name;
-          console.log(homeWorld)
-          return homeWorld
+          return homeWorld;
         })
         .catch((error) => {
           console.log(error);
-        }));
-
+        });
     } else {
       homeWorld = entry.name;
     }
     return homeWorld;
-  }
-
-  speciesLU(url) {
-    console.log(url);
   }
 
   navigate(e) {
