@@ -2,7 +2,7 @@
 
     const LoadingSpinner = () => (
       <div>
-        <i className="fa fa-spinner fa-spin" /> Loading...
+        <i/>Loading...
       </div>
     );
 

@@ -46,22 +46,16 @@ class App extends Component {
   }
 
   handleChange(e) {
-    alert("search alert", e.target.searchText.value)
-    //this.setState({
-      //[e.target.id]: e.target.value,
-    //});
+    this.setState({
+      searchText: e.target.value,
+    });
   }
 
-searchByName(e) {
-  alert("search alert", e.target.id)
-}
-
-  /* async searchByName(e) {
+  async searchByName(e) {
     e.preventDefault();
-    this.setState({searchText: "test"})
-    alert("search alert", e.target.value)
+    this.setState({characters: []})
     this.setState({ loading: true });
-    const peopleResponse = await axios.get("https://swapi.dev/api/people/?search=C-3PO");
+    const peopleResponse = await axios.get("https://swapi.dev/api/people/?search=" + this.state.searchText);
     let result = peopleResponse.data.results || [];
     for (let i = 0; i < result.length; i++) {
       if (result[i].species.length === 0) {
@@ -76,7 +70,7 @@ searchByName(e) {
     this.setState({ disableNext: true})
     this.setState({ disablePrevious: true})
     this.setState({ loading: false });
-  } */
+  }
 
   speciesLU(url) {
     let cachedSpecies = this.state.homeworldsCache;
