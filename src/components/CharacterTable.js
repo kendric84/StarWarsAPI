@@ -12,7 +12,7 @@ class CharacterTable extends Component {
     } else {
       tableRows = this.props.characters.map((data) => {
         return (
-            <tr>
+            <tr key={data.name} style={{color: 'rgb(255, 255, 0)', backgroundColor: 'rgba(52, 52, 52, 0.4)'}}>
                 <td>{data.name}</td>
                 <td>{data.birth_year}</td>
                 <td>{data.height}</td>
@@ -25,8 +25,8 @@ class CharacterTable extends Component {
     }
 
     return (
-        <div>
-        <table className="table table-striped">
+        <div  className="d-flex justify-content-center">
+        <table className=" w-50 table table-striped">
           <thead className="thead-light">
             <tr>
               <th>Name</th>
